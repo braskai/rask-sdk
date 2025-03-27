@@ -2,7 +2,7 @@
 name = "rask-sdk"
 version = "0.1.0"
 description = "Rask SDK"
-authors = ["vegiazarian <victor.egiazarian@prestataire.sewan.fr>"]
+authors = ["Victor Egiazarian <victor@brask.ai>"]
 readme = "README.md"
 packages = [
     { include = "rask_sdk" },
