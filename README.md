@@ -1,6 +1,17 @@
 # Rask SDK
 Our SDK makes it easy for developers to integrate Rask AI services into their applications quickly and seamlessly by providing them with an easy-to-use Python client. 
-## 1. Interface
+## 1. Installation
+Rask SDK can be installed by the direct link to the repository using any Python package manager. Below you can find an example of how to do this using `pip`:
+```shell
+pip install git+ssh://git@github.com/braskai/rask-sdk.git@main
+```
+Or using `poetry` and `pyproject.toml`:
+```shell
+[tool.poetry.dependencies]
+rask-sdk = { branch = "main", git = "git@github.com:braskai/rask-sdk.git" }
+```
+
+## 2. Interface
 Below you can find a list of all available methods with their input and output data formats.
 ```python
 
@@ -111,11 +122,11 @@ class RaskSDKClient:
         """Delete glossary by id."""
 ```
 
-## 2. Authentication
+## 3. Authentication
 Our SDK contains refresh token logic inside the `RaskSDKClient`, so you do not really have to implement this logic on your side. 
 You can do it if you want using `authenticate` method, but in general you can just initialize the client and use it as is.
 
-## 3. Quick start
+## 4. Quick start
 In this example, let's look at our basic flow, which includes the following steps:
 - Upload a media
 - Create a glossary
@@ -165,7 +176,7 @@ async def main():
     # Fetch project status waiting for dubbing to be completed
     while project.status is not enums.ProjectStatus.MERGING_DONE:
         project = await client.get_project(project_id=project.id)
-        await asyncio.sleep(3)
+        await asyncio.sleep(10)
     
     # Get project transcription
     transcription = await client.get_project_transcription(project_id=project.id)
@@ -186,7 +197,7 @@ async def main():
     # Fetch project status waiting for redubbing to be completed
     while project.status is not enums.ProjectStatus.MERGING_DONE:
         project = await client.get_project(project_id=project.id)
-        await asyncio.sleep(3)
+        await asyncio.sleep(10)
     
     # Get lipsync info
     lipsync_info = await client.get_lipsync_info(project_id=project.id)
@@ -201,7 +212,7 @@ async def main():
     # Fetch lipsync info waiting for lipsync to be completed
     while lipsync_info.lipsync_task_status is not enums.LipsyncStatus.DONE:
         lipsync_info = await client.get_lipsync_info(project_id=project.id)
-        await asyncio.sleep(3)
+        await asyncio.sleep(10)
 
 
 if __name__ == "__main__":

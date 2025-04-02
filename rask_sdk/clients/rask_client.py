@@ -2,6 +2,7 @@ import uuid
 from http import HTTPStatus
 from json import JSONDecodeError
 from typing import BinaryIO
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -253,10 +254,25 @@ class RaskSDKClient:
     ) -> schemas.TranscriptionId:
         """Create transcription via .srt uploading."""
 
+        files: Dict[str, BinaryIO] = {}
+        params: Dict[str, str] = {}
+
+        if src is not None:
+            files["src"] = src
+
+        if dst is not None:
+            files["dst"] = dst
+
+        if src_lang is not None:
+            params["src_lang"] = src_lang
+
+        if dst_lang is not None:
+            params["dst_lang"] = dst_lang
+
         transcription = await self._client.post(
             f"{self._base_url}/v2/transcriptions/srt",
-            files={"src": src, "dst": dst},
-            params={"src_lang": src_lang, "dst_lang": dst_lang},
+            files=files,
+            params=params,
             timeout=timeout,
         )
         self._raise_for_status(response=transcription)
@@ -265,12 +281,15 @@ class RaskSDKClient:
 
     @retry_on_auth_error()
     async def get_project_transcription(
-        self, project_id: uuid.UUID
+        self,
+        project_id: uuid.UUID,
+        segment_ids: Optional[List[uuid.UUID]] = None,
     ) -> schemas.TranscriptionGet:
         """Get transcription associated with the project."""
 
         transcription = await self._client.get(
-            f"{self._base_url}/v2/projects/{str(project_id)}/transcription"
+            f"{self._base_url}/v2/projects/{str(project_id)}/transcription",
+            params={"segment_ids": segment_ids} if segment_ids else None,
         )
         self._raise_for_status(response=transcription)
 
