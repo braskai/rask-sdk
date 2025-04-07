@@ -88,7 +88,9 @@ class RaskSDKClient:
         """Create transcription via .srt uploading."""
 
     async def get_project_transcription(
-        self, project_id: uuid.UUID
+        self,
+        project_id: uuid.UUID,
+        segment_ids: Optional[List[uuid.UUID]] = None,
     ) -> schemas.TranscriptionGet:
         """Get transcription associated with the project."""
 
