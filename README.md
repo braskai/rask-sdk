@@ -245,7 +245,7 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
 ```
-> **Tip:** some operations (generating voiceover, lipsync or re-dubbing the project) take time to complete - please make sure to adjust your polling intervals accordingly.
+> **Tip:** some operations (generating voiceover, lipsync or re-dubbing the project) take time to complete - please make sure to adjust your polling intervals accordingly. 
 
 ## 5. Supported languages
 
