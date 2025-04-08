@@ -1,7 +1,9 @@
 # Rask SDK
-Our SDK makes it easy for developers to integrate Rask AI services into their applications quickly and seamlessly by providing them with an easy-to-use Python client. 
+This SDK provides an official Python client for the Rask API. For full API reference and authentication setup, see [Rask API Docs](https://docs.api.rask.ai/introduction).
 ## 1. Installation
-Rask SDK can be installed by the direct link to the repository using any Python package manager. Below you can find an example of how to do this using `pip`:
+Rask SDK can be installed by the direct link to the repository using any Python package manager. 
+
+Below you can find an example of how to do this using `pip`:
 ```shell
 pip install git+ssh://git@github.com/braskai/rask-sdk.git@main
 ```
@@ -13,6 +15,7 @@ rask-sdk = { branch = "main", git = "git@github.com:braskai/rask-sdk.git" }
 
 ## 2. Interface
 Below you can find a list of all available methods with their input and output data formats.
+### Authenticate and check minutes balance
 ```python
 
 class RaskSDKClient:
@@ -23,6 +26,12 @@ class RaskSDKClient:
     
     async def get_credits(self) -> schemas.CreditsGet:
         """Get credits of the current user."""
+```
+### Manage Media
+```python
+
+class RaskSDKClient:
+    """."""
     
     async def create_media_file(
         self, file: BinaryIO, kind: Optional[enums.MediaKind] = None, timeout: int = 1800
@@ -34,6 +43,12 @@ class RaskSDKClient:
 
     async def get_media(self, media_id: uuid.UUID) -> schemas.MediaGet:
         """Get media by id."""
+```
+### Manage Projects
+```python
+
+class RaskSDKClient:
+    """."""
         
     async def create_project(self, data: schemas.ProjectCreate) -> schemas.ProjectGet:
         """Create project."""
@@ -56,7 +71,9 @@ class RaskSDKClient:
 
     async def get_project_voices(self, project_id: uuid.UUID) -> List[schemas.Voice]:
         """Get project voices."""
-
+```
+### Generate Lip-Sync
+```python
     async def run_check_face_task(
         self, project_id: uuid.UUID
     ) -> schemas.CheckFaceTaskResponse:
@@ -71,7 +88,9 @@ class RaskSDKClient:
 
     async def get_lipsync_info(self, project_id: uuid.UUID) -> schemas.LipsyncInfo:
         """Get lipsync info."""
-
+```
+### Manage Transcription
+```python
     async def create_transcription(
         self, data: schemas.TranscriptionCreate
     ) -> schemas.TranscriptionId:
@@ -108,7 +127,9 @@ class RaskSDKClient:
         self, project_id: uuid.UUID, segment_id: uuid.UUID
     ) -> schemas.SegmentId:
         """Delete the segment in the transcription associated with the project."""
-
+```
+### Manage Glossary
+```python
     async def create_glossary(self, data: schemas.GlossaryCreate) -> schemas.GlossaryGet:
         """Create new glossary."""
 
@@ -128,6 +149,8 @@ class RaskSDKClient:
 Our SDK contains refresh token logic inside the `RaskSDKClient`, so you do not really have to implement this logic on your side. 
 You can do it if you want using `authenticate` method, but in general you can just initialize the client and use it as is.
 
+To obtain your API credentials from your Rask account settings, follow instructions [here](https://help.rask.ai/hc/introducing-rask-api-rask-help-center).
+
 ## 4. Quick start
 In this example, let's look at our basic flow, which includes the following steps:
 - Upload a media
@@ -136,6 +159,8 @@ In this example, let's look at our basic flow, which includes the following step
 - Update project transcription
 - Redub the project
 - Run lipsync for the project
+
+To learn more about workflows you can set up, check out the pages under **Workflow** section in our [API docs](https://docs.api.rask.ai/workflow/translation).
 ```python
 import asyncio
 
@@ -220,3 +245,59 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
 ```
+> **Tip:** some operations (generating voiceover, lipsync or re-dubbing the project) take time to complete - please make sure to adjust your polling intervals accordingly.
+
+## 5. Supported languages
+
+We support over **130 target languages and dialects**.  
+When working with the SDK, make sure to specify the langauge - whether  **source** or **destination** or both - using the appropriate **language codes**.
+
+You can find the full list of supported language codes in our [API documentation](https://docs.api.rask.ai/languages) - be sure to double-check the correct format for your specific context.
+
+## 6. About SDK Schemas
+Many SDK methods accept or return structured data using [Pydantic](https://docs.pydantic.dev/latest/) models defined in `rask_sdk.schemas`.
+
+These models provide:
+- Structured request bodies (e.g. `ProjectCreate`, `TranscriptionCreate`)
+- Typed, autocompletable responses (e.g. `TranscriptionGet`, `ProjectGet`)
+- Built-in validation and serialization
+#### Usage Example
+
+```python
+from rask_sdk import schemas
+
+# Access schema types
+project = schemas.ProjectCreate(...)
+
+# Convert to JSON-compatible dict (Pydantic v2+)
+json_data = project.model_dump()
+```
+## 7. Supported Features Matrix
+
+
+| **SDK Method** | **API Docs**                                             |
+|----------------|----------------------------------------------------------|
+| `authenticate()` | [Authentication](https://docs.api.rask.ai/authentication) |
+| `get_credits()` | [Get credits](https://docs.api.rask.ai/api-reference/user/get_credits) |
+| `create_media_file(...)` | [Upload media by file](https://docs.api.rask.ai/api-reference/media/upload_media_file) |
+| `create_media_link(...)` | [Upload media by link](https://docs.api.rask.ai/api-reference/media/upload_media_link) |
+| `get_media(...)` | [Get media](https://docs.api.rask.ai/api-reference/media/get_media)|
+| `create_project(...)` | [Create project](https://docs.api.rask.ai/api-reference/project/create_project) |
+| `get_project(...)` | [Get project](https://docs.api.rask.ai/api-reference/project/get_project) |
+| `get_projects(...)` | [Get project list](https://docs.api.rask.ai/api-reference/project/get_project_list) |
+| `generate_project(...)` | [Generate project](https://docs.api.rask.ai/api-reference/project/generate_project) |
+| `patch_project(...)` | [Patch project](https://docs.api.rask.ai/api-reference/project/patch_project) |
+| `get_project_voices(...)` | [Get project voices](https://docs.api.rask.ai/api-reference/project/get_voices) |
+| `run_check_face_task(...)` | [Run check face](https://docs.api.rask.ai/api-reference/lipsync/run_check_face) |
+| `run_lipsync_task(...)` | [Run Lip-sync](https://docs.api.rask.ai/api-reference/lipsync/run_lipsync) |
+| `get_lipsync_info(...)` | [Get Lip-sync info](https://docs.api.rask.ai/api-reference/lipsync/get_lipsync) |
+| `create_transcription(...)` | [Create transcription](https://docs.api.rask.ai/api-reference/project/create_transcription) |
+| `create_transcription_srt(...)` | [Create transcription srt](https://docs.api.rask.ai/api-reference/project/create_transcription_srt) |
+| `get_project_transcription(...)` | [Get transcription](https://docs.api.rask.ai/api-reference/project/get_transcription) |
+| `add_project_transcription_segments(...)` | [Add segments](https://docs.api.rask.ai/api-reference/project/add_segments) |
+| `patch_project_transcription_segments(...)` | [Patch segments](https://docs.api.rask.ai/api-reference/project/patch_segments) |
+| `delete_project_transcription_segment(...)` | [Delete segment](https://docs.api.rask.ai/api-reference/project/delete_segment) |
+| `create_glossary(...)` | [Create glossary](https://docs.api.rask.ai/api-reference/glossary/create_glossary) |
+| `get_glossary(...)` | [Get glossary](https://docs.api.rask.ai/api-reference/glossary/get_glossary) |
+| `update_glossary(...)` | [Update glossary](https://docs.api.rask.ai/api-reference/glossary/update_glossary) |
+| `delete_glossary(...)` | [Delete glossary](https://docs.api.rask.ai/api-reference/glossary/delete_glossary) |
